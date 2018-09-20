@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+PROJECT=$1
+DOMAIN=$2
+DOMAIN_EMAIL=$3
+
+if [[ -z $PROJECT ]]; then
+  echo "Please specify a project name as arg 1."
+  exit 1
+fi
+
+if [[ -z $DOMAIN ]]; then
+  echo "Please specify a domain name as arg 2."
+  exit 2
+fi
+
+if [[ -z $DOMAIN_EMAIL ]]; then
+  echo "Please specify a domain name registered email address as arg 3."
+  exit 3
+fi
+
+wdir=/tmp/$PROJECT
+cat init.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/init.yml
+cat securing.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
+cat secured.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
+
+#
+# Build the basic infrastructure.
+#
+kubectl apply -f $wdir/init.yml
+
+#
+# Wait for the basic infrastructure to be online.
+#
+#   * Wait for an ingress IP address.
+#   * Wait for the domain name to answer on that IP address.
+#
+ip_address=
+function attempt_get_ip {
+  ip_address=`kubectl get ingress -o=jsonpath='{.status.loadBalancer.ingress[*].ip}' $PROJECT-ingress`
+}
+echo -n "Waiting for IP address"
+while [ -z $ip_address ]
+do
+  echo -n "."
+  attempt_get_ip
+  sleep 1
+done
+echo
+
+domain_test=42
+function test_domain {
+  curl --silent --fail $DOMAIN
+  domain_test=$?
+}
+echo -n "Waiting for DNS regisration to $ip_address"
+while [ $domain_test != 0 ]
+do
+  echo -n "."
+  test_domain
+  sleep 1
+done
+echo
+
+kubectl apply -f $wdir/securing.yml
+kubectl apply -f $wdir/secured.yml
