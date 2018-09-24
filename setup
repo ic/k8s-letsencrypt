@@ -1,28 +1,40 @@
 #!/usr/bin/env bash
 
-PROJECT=$1
-DOMAIN=$2
-DOMAIN_EMAIL=$3
+GCLOUD_PROJECT=$1
+DEPLOYMENT_NAME=$2
+DOMAIN=$3
+DOMAIN_EMAIL=$4
 
-if [[ -z $PROJECT ]]; then
-  echo "Please specify a project name as arg 1."
+if [[ -z $GCLOUD_PROJECT ]]; then
+  echo "Please specify a Gcloud project name as arg 1."
   exit 1
 fi
 
-if [[ -z $DOMAIN ]]; then
-  echo "Please specify a domain name as arg 2."
+if [[ -z $DEPLOYMENT_NAME ]]; then
+  echo "Please specify a deployment name as arg 2."
   exit 2
 fi
 
-if [[ -z $DOMAIN_EMAIL ]]; then
-  echo "Please specify a domain name registered email address as arg 3."
+if [[ -z $DOMAIN ]]; then
+  echo "Please specify a domain name as arg 3."
   exit 3
 fi
 
-wdir=/tmp/$PROJECT
-cat init.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/init.yml
-cat securing.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
-cat secured.yml.tmpl | sed s/PROJECT/$PROJECT/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
+if [[ -z $DOMAIN_EMAIL ]]; then
+  echo "Please specify a domain name registered email address as arg 4."
+  exit 4
+fi
+
+wdir=/tmp/$DEPLOYMENT_NAME
+mkdir -p $wdir
+cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/init.yml
+cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
+cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
+
+#
+# Login to the Glcoud environment
+#
+gcloud auth login --project $GCLOUD_PROJECT
 
 #
 # Build the basic infrastructure.
@@ -37,7 +49,7 @@ kubectl apply -f $wdir/init.yml
 #
 ip_address=
 function attempt_get_ip {
-  ip_address=`kubectl get ingress -o=jsonpath='{.status.loadBalancer.ingress[*].ip}' $PROJECT-ingress`
+  ip_address=`kubectl get ingress -o=jsonpath='{.status.loadBalancer.ingress[*].ip}' $DEPLOYMENT_NAME-ingress`
 }
 echo -n "Waiting for IP address"
 while [ -z $ip_address ]
