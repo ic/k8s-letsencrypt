@@ -48,6 +48,7 @@ mkdir -p $wdir
 cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/init.yml
 cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
 cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
+cat delete.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/delete_$DEPLOYMENT_NAME.yml
 
 function guard_cmd {
   set -e
