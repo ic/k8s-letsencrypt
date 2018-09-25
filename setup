@@ -13,28 +13,34 @@ fi
 
 
 GCLOUD_PROJECT=$1
-DEPLOYMENT_NAME=$2
-DOMAIN=$3
-DOMAIN_EMAIL=$4
+GCLOUD_ACCOUNT=$2
+DEPLOYMENT_NAME=$3
+DOMAIN=$4
+DOMAIN_EMAIL=$5
 
 if [[ -z $GCLOUD_PROJECT ]]; then
   echo "Please specify a Gcloud project name as arg 1."
   exit 1
 fi
 
-if [[ -z $DEPLOYMENT_NAME ]]; then
-  echo "Please specify a deployment name as arg 2."
+if [[ -z $GCLOUD_ACCOUNT ]]; then
+  echo "Please specify a Gcloud account name as arg 2."
   exit 2
 fi
 
-if [[ -z $DOMAIN ]]; then
-  echo "Please specify a domain name as arg 3."
+if [[ -z $DEPLOYMENT_NAME ]]; then
+  echo "Please specify a deployment name as arg 3."
   exit 3
 fi
 
-if [[ -z $DOMAIN_EMAIL ]]; then
-  echo "Please specify a domain name registered email address as arg 4."
+if [[ -z $DOMAIN ]]; then
+  echo "Please specify a domain name as arg 4."
   exit 4
+fi
+
+if [[ -z $DOMAIN_EMAIL ]]; then
+  echo "Please specify a domain name registered email address as arg 5."
+  exit 5
 fi
 
 wdir=/tmp/$DEPLOYMENT_NAME
@@ -43,15 +49,21 @@ cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOM
 cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
 cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
 
+function guard_cmd {
+  set -e
+  $1
+  set +e
+}
+
 #
 # Login to the Glcoud environment
 #
-gcloud auth login --project $GCLOUD_PROJECT
+guard_cmd "gcloud auth login $GCLOUD_ACCOUNT --quiet --brief --activate --project $GCLOUD_PROJECT"
 
 #
 # Build the basic infrastructure.
 #
-kubectl apply -f $wdir/init.yml
+guard_cmd "kubectl apply -f $wdir/init.yml"
 
 #
 # Wait for the basic infrastructure to be online.
@@ -86,5 +98,7 @@ do
 done
 echo
 
-kubectl apply -f $wdir/securing.yml
-kubectl apply -f $wdir/secured.yml
+guard_cmd "kubectl apply -f $wdir/securing.yml"
+guard_cmd "kubectl apply -f $wdir/secured.yml"
+
+echo Completed.

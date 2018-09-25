@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: PROJECT-ingress
+  name: DEPLOYMENT_NAME-ingress
   labels:
     last_updated: "1000000000"
 spec:
   tls:
   - hosts:
     - DOMAIN
-    secretName: PROJECT-letsencrypt-certs
+    secretName: DEPLOYMENT_NAME-lscrypt-certs
   rules:
   - host: DOMAIN
     http:
       paths:
       - path: /*
         backend:
-          serviceName: PROJECT-nginx
+          serviceName: DEPLOYMENT_NAME-nginx
           servicePort: 80

@@ -2,17 +2,17 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: PROJECT-nginx
-  name: PROJECT-nginx 
+    app: DEPLOYMENT_NAME-nginx
+  name: DEPLOYMENT_NAME-nginx
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: PROJECT-nginx
+        app: DEPLOYMENT_NAME-nginx
     spec:
       containers:
-      - name: PROJECT-nginx
+      - name: DEPLOYMENT_NAME-nginx
         image: nginx
         ports:
         - containerPort: 80
@@ -31,10 +31,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: PROJECT-nginx
+  name: DEPLOYMENT_NAME-nginx
 spec:
   selector:
-    app: PROJECT-nginx
+    app: DEPLOYMENT_NAME-nginx
   type: NodePort
   ports:
   - protocol: TCP
@@ -65,12 +65,12 @@ data:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: PROJECT-ingress
+  name: DEPLOYMENT_NAME-ingress
 spec:
   rules:
   - http:
       paths:
       - path: /*
         backend:
-          serviceName: PROJECT-nginx
+          serviceName: DEPLOYMENT_NAME-nginx
           servicePort: 80
