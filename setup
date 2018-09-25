@@ -97,7 +97,7 @@ function test_domain {
   curl --silent --fail $DOMAIN
   domain_test=$?
 }
-echo -n "Waiting for DNS regisration to $ip_address"
+echo -n "Waiting for $DOMAIN to get to $ip_address (please register as an A record, nothing to do if already set)"
 while [ $domain_test != 0 ]
 do
   echo -n "."
