@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+which -s gcloud
+if [[ $? != 0 ]]; then
+  echo 'Setup requires `gcloud` available on the shell PATH.'
+  exit 128
+fi
+which -s kubectl
+if [[ $? != 0 ]]; then
+  echo 'Setup requires `kubectl` available on the shell PATH.'
+  exit 127
+fi
+
+
 GCLOUD_PROJECT=$1
 DEPLOYMENT_NAME=$2
 DOMAIN=$3
