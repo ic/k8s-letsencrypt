@@ -52,7 +52,7 @@ data:
     }
 
     upstream lscrypt {
-      server lscrypt:80 max_fails=0 fail_timeout=1s;
+      server DEPLOYMENT_NAME-lscrypt:80 max_fails=0 fail_timeout=1s;
     }
 
     server {
@@ -113,7 +113,7 @@ spec:
         app: DEPLOYMENT_NAME-lscrypt
     spec:
       containers:
-      - image: epic/kube-nginx-lscrypt:0.1
+      - image: epic/kube-nginx-letsencrypt:0.1
         name: DEPLOYMENT_NAME-lscrypt
         imagePullPolicy: Always
         ports:
