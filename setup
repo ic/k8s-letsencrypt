@@ -102,4 +102,8 @@ echo
 guard_cmd "kubectl apply -f $wdir/securing.yml"
 guard_cmd "kubectl apply -f $wdir/secured.yml"
 
-echo Completed.
+echo Setup complete:
+echo -e "\tCluster IP address (ingress): $ip_address"
+echo -e "\tCluster DNS: $DOMAIN"
+echo -e "\tDeletion command: kubectl delete -f $wdir/delete_$DEPLOYMENT_NAME.yml"
+echo -e "\tWarning: Please save the deletion script if you want to use it later ($wdir may get erased)."
