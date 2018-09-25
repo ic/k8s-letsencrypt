@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - DOMAIN
+    - DOMAINS_VALUE
     secretName: DEPLOYMENT_NAME-lscrypt-certs
   rules:
-  - host: DOMAIN
+  - host: DOMAINS_VALUE
     http:
       paths:
       - path: /*

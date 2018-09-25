@@ -17,6 +17,7 @@ GCLOUD_ACCOUNT=$2
 DEPLOYMENT_NAME=$3
 DOMAIN=$4
 DOMAIN_EMAIL=$5
+PRODUCTION_MODE=$6
 
 if [[ -z $GCLOUD_PROJECT ]]; then
   echo "Please specify a Gcloud project name as arg 1."
@@ -43,12 +44,18 @@ if [[ -z $DOMAIN_EMAIL ]]; then
   exit 5
 fi
 
+if [[ -z $PRODUCTION_MODE ]]; then
+  STAGING_MODE="true"
+else
+  STAGING_MODE=""
+fi
+
 wdir=/tmp/$DEPLOYMENT_NAME
 mkdir -p $wdir
-cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/init.yml
-cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/securing.yml
-cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/secured.yml
-cat delete.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN/$DOMAIN/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g > $wdir/delete_$DEPLOYMENT_NAME.yml
+cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/init.yml
+cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g > $wdir/securing.yml
+cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/secured.yml
+cat delete.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/delete_$DEPLOYMENT_NAME.yml
 
 function guard_cmd {
   set -e
