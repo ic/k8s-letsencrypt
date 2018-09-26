@@ -53,8 +53,9 @@ fi
 wdir=/tmp/$DEPLOYMENT_NAME
 mkdir -p $wdir
 cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/init.yml
-cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g > $wdir/securing.yml
+cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g | sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g > $wdir/securing.yml
 cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/secured.yml
+cat cleanup.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g | sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g > $wdir/cleanup.yml
 cat delete.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/delete_$DEPLOYMENT_NAME.yml
 
 function guard_cmd {
@@ -119,6 +120,7 @@ echo
 
 guard_cmd "kubectl apply -f $wdir/securing.yml"
 guard_cmd "kubectl apply -f $wdir/secured.yml"
+guard_cmd "kubectl delete -f $wdir/cleanup.yml"
 
 echo Setup complete:
 echo -e "\tCluster IP address (ingress): $ip_address"
