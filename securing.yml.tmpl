@@ -29,18 +29,6 @@ spec:
             name: nginx-lscrypt-config
 ---
 apiVersion: v1
-kind: Service
-metadata:
-  name: DEPLOYMENT_NAME-nginx
-spec:
-  selector:
-    app: DEPLOYMENT_NAME-nginx
-  type: NodePort
-  ports:
-  - protocol: TCP
-    port: 80
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-lscrypt-config
@@ -79,19 +67,6 @@ data:
         proxy_set_header x-forwarded-proto $scheme;
       }
     }
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: DEPLOYMENT_NAME-ingress
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /*
-        backend:
-          serviceName: DEPLOYMENT_NAME-nginx
-          servicePort: 80
 ---
 apiVersion: v1
 kind: Secret
