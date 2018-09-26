@@ -99,6 +99,17 @@ metadata:
   name: DEPLOYMENT_NAME-lscrypt-certs
 type: Opaque
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: DEPLOYMENT_NAME-lscrypt
+spec:
+  selector:
+    app: DEPLOYMENT_NAME-lscrypt
+  ports:
+  - protocol: TCP
+    port: 80
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -131,14 +142,3 @@ spec:
         - name: DEPLOYMENT
           value: DEPLOYMENT_NAME-lscrypt
       restartPolicy: Never
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: DEPLOYMENT_NAME-lscrypt
-spec:
-  selector:
-    app: DEPLOYMENT_NAME-lscrypt
-  ports:
-  - protocol: TCP
-    port: 80

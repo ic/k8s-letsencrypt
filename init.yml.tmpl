@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: DEPLOYMENT_NAME-nginx
+spec:
+  selector:
+    app: DEPLOYMENT_NAME-nginx
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -27,18 +39,6 @@ spec:
         - name: nginx-config
           configMap:
             name: nginx-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: DEPLOYMENT_NAME-nginx
-spec:
-  selector:
-    app: DEPLOYMENT_NAME-nginx
-  type: NodePort
-  ports:
-  - protocol: TCP
-    port: 80
 ---
 apiVersion: v1
 kind: ConfigMap
