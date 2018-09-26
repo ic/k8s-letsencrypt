@@ -80,6 +80,10 @@ guard_cmd "kubectl apply -f $wdir/init.yml"
 #   * Wait for the domain name to answer on that IP address.
 #
 ip_address=
+# attempt_get_ip requests cluster data and extracts the IP address field.
+#   The field is empty until an address is available.
+#   The function sets `ip_address` to the address when available,
+#   otherwise an empty value.
 function attempt_get_ip {
   ip_address=`kubectl get ingress -o=jsonpath='{.status.loadBalancer.ingress[*].ip}' $DEPLOYMENT_NAME-ingress`
 }
@@ -93,11 +97,18 @@ done
 echo
 
 domain_test=42
+# test_domain attempts a direct connection to the target domain name.
+#   Output from connection attempts are discarded. The function sets
+#   `domain_test` to 0 when the domain returns 200, and a non-zero
+#   value on any other status code.
 function test_domain {
   curl --silent --fail $DOMAIN
   domain_test=$?
 }
-echo -n "Waiting for $DOMAIN to get to $ip_address (please register as an A record, nothing to do if already set)"
+echo "Waiting for $DOMAIN availability:"
+echo -e "\t* Automatic: The cluster endpoint is preparing (Ingress)."
+echo -e "\t* Manual: Please ensure '$DOMAIN' is registered as an A record to '$ip_address' on your DNS."
+echo -e -n "\t"
 while [ $domain_test != 0 ]
 do
   echo -n "."
