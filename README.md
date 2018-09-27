@@ -65,3 +65,5 @@ This piece is based on prior work:
 * @thejsj [similar work](https://github.com/thejsj/kubernetes-letsencrypt-demo) on Kubernetes + Let's Encrypt, with the accompanying [blog post](https://runnable.com/blog/how-to-use-lets-encrypt-on-kubernetes).
 
 These earlier works guided me, but did not work entirely. Perhaps they became outdated with newer version of Kubernetes or Docker. Another reason is that you can see in `setup` that the procedure is in two stages. Anyway, I hope this repository helps somewhere.
+
+Work done with the support of [Chikaku, Inc.](https://www.chikaku.co.jp/).
