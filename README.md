@@ -48,6 +48,10 @@ For convenience, `setup` generates a deletion script that cleans up all the reso
 
 Where `delete_myproject.yml` has been generated for the `myproject` project name.
 
+### Extra details
+
+* The container running `certbot` uses the `epic/kube-nginx-letsencrypt:0.1` image. The `Dockerfile` for that image is [available here](https://github.com/ic/kube-nginx-letsencrypt). This image is based on [prior work](https://github.com/sjenning/kube-nginx-letsencrypt) by @sjenning, with minor changes for usability.
+
 
 ## Ideas for improvements
 
