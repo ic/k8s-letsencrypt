@@ -52,11 +52,29 @@ Where `delete_myproject.yml` has been generated for the `myproject` project name
 
 * The container running `certbot` uses the `epic/kube-nginx-letsencrypt:0.1` image. The `Dockerfile` for that image is [available here](https://github.com/ic/kube-nginx-letsencrypt). This image is based on [prior work](https://github.com/sjenning/kube-nginx-letsencrypt) by @sjenning, with minor changes for usability.
 
+### Gotchas
+
+To date, the container registering to Let's Encrypt may fail a few times before succeeding (hopefully). Please allow for a few minutes! Typically, 2-4 failed containers report logs like:
+
+    > kubectl logs mytest-lscrypt-job-5v77j
+    Saving debug log to /var/log/letsencrypt/letsencrypt.log
+    Starting new HTTPS connection (1): acme-staging.api.letsencrypt.org
+    Obtaining a new certificate
+    Performing the following challenges:
+    http-01 challenge for mydomain.com
+    Using the webroot path /root for all unmatched domains.
+    Waiting for verification...
+    Cleaning up challenges
+    Failed authorization procedure. mydomain.com (http-01): urn:acme:error:unauthorized :: The client lacks sufficient authorization :: Invalid response from http://mydomain.com/.well-known/acme-challenge/sD13uStkK9Sf3o5Pir8zouE0NA7TWytV4Igq3K1gnps: "<!DOCTYPE html>\n<html lang=en>\n  <meta charset=utf-8>\n  <meta name=viewport content=\"initial-scale=1, minimum-scale=1, width=dev"
+    ...
+
+At this time, this problem looks like a timing issue. `setup` does wait for the DNS to get updated and point to the cluster endpoint's IP address. Yet the job running the Let's Encrypt container may attempt too early. Just waiting for a few failed attempts has ended to successful completion here.
 
 ## Ideas for improvements
 
 Ideas for possible issues and feature requests. The appear here, as there is no plan at this point. Perhaps if there is popular demand! Then, please go ahead and register as GitHub issues.
 
+* The tool does registration, but it does not support renewal (yet, I need it too).
 * `setup` does not select the target cluster. Basically need to add: `gcloud config set container/cluster <target cluster name>`
 * Remove dependency on the Gcloud SDK, by using the APIs directly.
 * Accept more configuration parameter to completely plug into an existing cluster (e.g. specify the name of the Ingress to secure, etc.).
