@@ -17,7 +17,9 @@ GCLOUD_ACCOUNT=$2
 DEPLOYMENT_NAME=$3
 DOMAIN=$4
 DOMAIN_EMAIL=$5
-PRODUCTION_MODE=$6
+NODE_TO_SECURE=$6
+PORT_SECURED_NODE=$7
+PRODUCTION_MODE=$8
 
 if [[ -z $GCLOUD_PROJECT ]]; then
   echo "Please specify a Gcloud project name as arg 1."
@@ -44,6 +46,16 @@ if [[ -z $DOMAIN_EMAIL ]]; then
   exit 5
 fi
 
+if [[ -z $NODE_TO_SECURE ]]; then
+  echo "Please specify the name of the node to secure inside the cluster as arg 6."
+  exit 6
+fi
+
+if [[ -z $PORT_SECURED_NODE ]]; then
+  echo "Please specify the port of the backend node to secure (currently port it is listening) as arg 7."
+  exit 7
+fi
+
 if [[ -z $PRODUCTION_MODE ]]; then
   STAGING_MODE="true"
 else
@@ -52,11 +64,37 @@ fi
 
 wdir=/tmp/$DEPLOYMENT_NAME
 mkdir -p $wdir
-cat init.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/init.yml
-cat securing.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g | sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g > $wdir/securing.yml
-cat secured.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/secured.yml
-cat cleanup.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g | sed s/STAGING_MODE/$STAGING_MODE/g | sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g > $wdir/cleanup.yml
-cat delete.yml.tmpl | sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | sed s/DOMAINS_VALUE/$DOMAIN/g > $wdir/delete_$DEPLOYMENT_NAME.yml
+cat init.yml.tmpl | \
+  sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | \
+  sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | \
+  sed s/DOMAINS_VALUE/$DOMAIN/g \
+  > $wdir/init.yml
+cat securing.yml.tmpl | \
+  sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | \
+  sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | \
+  sed s/DOMAINS_VALUE/$DOMAIN/g | \
+  sed s/STAGING_MODE/$STAGING_MODE/g | \
+  sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g | \
+  sed s/NODE_TO_SECURE/$NODE_TO_SECURE/g \
+  sed s/PORT_SECURED_NODE/$PORT_SECURED_NODE/g \
+  > $wdir/securing.yml
+cat secured.yml.tmpl | \
+  sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | \
+  sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | \
+  sed s/DOMAINS_VALUE/$DOMAIN/g \
+  > $wdir/secured.yml
+cat cleanup.yml.tmpl | \
+  sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | \
+  sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | \
+  sed s/DOMAINS_VALUE/$DOMAIN/g | \
+  sed s/STAGING_MODE/$STAGING_MODE/g | \
+  sed s/GCLOUD_ACCOUNT/$GCLOUD_ACCOUNT/g \
+  > $wdir/cleanup.yml
+cat delete.yml.tmpl | \
+  sed s/DEPLOYMENT_NAME/$DEPLOYMENT_NAME/g | \
+  sed s/DOMAIN_EMAIL/$DOMAIN_EMAIL/g | \
+  sed s/DOMAINS_VALUE/$DOMAIN/g \
+  > $wdir/delete_$DEPLOYMENT_NAME.yml
 
 function guard_cmd {
   set -e
