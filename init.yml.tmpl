@@ -60,6 +60,10 @@ data:
       listen [::]:80;
       server_name  _;
 
+      location = / {
+        return 200 "";
+      }
+
       location / {
         proxy_pass http://NODE_TO_SECURE-unprotected;
         proxy_http_version 1.1;
