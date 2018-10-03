@@ -7,7 +7,7 @@ There may be today way better methods to achieve the same. For example:
 * [Bitnami tutorial using Helm and the Nginx ingress extension](https://docs.bitnami.com/kubernetes/how-to/secure-kubernetes-services-with-ingress-tls-letsencrypt/)
 * The Kubernetes [ingress-nginx](https://kubernetes.github.io/ingress-nginx/user-guide/tls/) project.
 
-I recommend to have a look at those first. The following is used in production, but there are rought edges. Perhaps the above more "official" initatives are easier to use.
+I recommend to have a look at those first. The following is used in production, but there are rought edges. Perhaps the above more "official" initatives are easier to use. As far as I can tell, one possible advantage of this repo is that it automates most steps (all the others I checked need quite a few steps).
 
 ## Overview
 
