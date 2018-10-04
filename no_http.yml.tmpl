@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: DEPLOYMENT_NAME-ingress
+  labels:
+    last_updated: "1000000000"
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  tls:
+  - hosts:
+    - DOMAINS_VALUE
+    secretName: DEPLOYMENT_NAME-lscrypt-certs
+  backend:
+    serviceName: cf-sec-nginx
+    servicePort: 80
