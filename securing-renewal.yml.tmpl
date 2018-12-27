@@ -1,0 +1,37 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: DEPLOYMENT_NAME-lscrypt-cron
+  labels:
+    app: DEPLOYMENT_NAME-lscrypt
+spec:
+  schedule: "0 1 1 * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      name: DEPLOYMENT_NAME-lscrypt
+      labels:
+        app: DEPLOYMENT_NAME-lscrypt
+    spec:
+      template:
+        spec:
+          serviceAccountName: DEPLOYMENT_NAME-sa
+          containers:
+          - image: epic/kube-nginx-letsencrypt:0.1
+            name: DEPLOYMENT_NAME-lscrypt
+            imagePullPolicy: Always
+            ports:
+            - name: DEPLOYMENT_NAME-lscrypt
+              containerPort: 80
+            env:
+            - name: DOMAINS
+              value: DOMAINS_VALUE
+            - name: EMAIL
+              value: DOMAIN_EMAIL
+            - name: SECRET
+              value: DEPLOYMENT_NAME-lscrypt-certs
+            - name: STAGING
+              value: "STAGING_MODE"
+            - name: DEPLOYMENT
+              value: DEPLOYMENT_NAME-nginx
+          restartPolicy: Never

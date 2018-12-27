@@ -30,8 +30,15 @@ kind: Secret
 metadata:
   name: DEPLOYMENT_NAME-lscrypt-certs
 ---
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
+metadata:
+  name: DEPLOYMENT_NAME-lscrypt-cron
+  labels:
+    app: DEPLOYMENT_NAME-lscrypt
+---
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: DEPLOYMENT_NAME-lscrypt-job
   labels:
