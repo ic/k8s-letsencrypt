@@ -62,6 +62,7 @@ Where `delete_myproject.yml` has been generated for the `myproject` project name
 ### Extra details
 
 * The container running `certbot` uses the `epic/kube-nginx-letsencrypt:0.1` image. The `Dockerfile` for that image is [available here](https://github.com/ic/kube-nginx-letsencrypt). This image is based on [prior work](https://github.com/sjenning/kube-nginx-letsencrypt) by @sjenning, with minor changes for usability.
+* A Kubernets CronJob is supposed to renew certificates every month (validity is for 90 days, but this ensures any problem is detected way before we hit the wall---and it was relatively easy to achieve, too).
 
 ### Gotchas
 
@@ -85,10 +86,10 @@ At this time, this problem looks like a timing issue. `setup` does wait for the 
 
 Ideas for possible issues and feature requests. The appear here, as there is no plan at this point. Perhaps if there is popular demand! Then, please go ahead and register as GitHub issues.
 
-* The tool does registration, but it does not support renewal (yet, I need it too).
 * `setup` does not select the target cluster. Basically need to add: `gcloud config set container/cluster <target cluster name>`
 * Remove dependency on the Gcloud SDK, by using the APIs directly.
 * Accept more configuration parameter to completely plug into an existing cluster (e.g. specify the name of the Ingress to secure, etc.).
+* `setup` assumes the target cluster's service is available and running. If `setup` is applied too early, it will probably timeout, waiting for the target service to startup.
 
 ## Acknowledgements
 
