@@ -150,6 +150,7 @@ metadata:
     app: DEPLOYMENT_NAME-lscrypt
 spec:
   schedule: "0 13 27 * *"
+  concurrencyPolicy: Forbid
   jobTemplate:
     metadata:
       name: DEPLOYMENT_NAME-lscrypt
